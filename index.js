@@ -16,19 +16,23 @@ const createAlbumItem = (album, albums) => {
     return button;
 }
 
+const fetchUsers=async()=>{
+    const res=await fetch('https://jsonplaceholder.typicode.com/users');
+    return await res.json();
+}
+
 const loadUsers = async () => {
     try {
-        const res = await fetch('https://jsonplaceholder.typicode.com/users');
-        const users = await res.json();
+        const users=await fetchUsers();
         users.forEach(user => {
             userDropdown.appendChild(createOption(user.id, user.username));
         });
         userDropdown.addEventListener('change', () => {
             const userId = userDropdown.value;
             if (userId) {
-                loadAlbums(userId);
-                const heading2 = document.getElementById('heading2');
+                 loadAlbums(userId);
                 let resultingObject = users.find(users => users.id == userId);
+                const heading2 = document.getElementById('heading2');
                 heading2.innerHTML = `Albums by ${resultingObject.username}`;
                 const heading3 = document.getElementById('heading3');
                 heading3.innerHTML = '';
@@ -42,13 +46,15 @@ const loadUsers = async () => {
         console.error('failed to load users', err);
     }
 }
-
+const fetchAlbums=async(userId)=>{
+    const res = await fetch(`https://jsonplaceholder.typicode.com/albums?userId=${userId}`);
+        return await res.json();
+}
 const loadAlbums = async (userId) => {
     albumList.innerHTML = '';
     photoGallery.innerHTML = '';
     try {
-        const res = await fetch(`https://jsonplaceholder.typicode.com/albums?userId=${userId}`);
-        let albums = await res.json();
+        const albums=await fetchAlbums(userId);
         albums.forEach(album => {
             albumList.appendChild(createAlbumItem(album, albums));
             albumList.className = "albums";
